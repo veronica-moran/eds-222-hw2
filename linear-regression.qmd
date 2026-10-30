@@ -204,6 +204,11 @@ In `freeway_area_lm`, both areas share the same slope. Only the intercept differ
 
 :::
 
+
+```{r}
+betas_without <- coef(freeway_lm)
+betas_with <- coef(freeway_area_lm)
+```
 ```{r}
 #| label: plot-freeway-models
 
@@ -214,22 +219,24 @@ area_lines <- tibble(
   area = c("ENA", "ESA"),
   intercept = c(
     betas_with["(Intercept)"],
-    betas_without['area_ESA']
+    betas_with["(Intercept)"] + betas_with["areaESA"]
   ),
   slope = betas_with["dist_freeway_km"]
 )
 
-ggplot(ena_esa, aes(x = dist_area_km, y = pb_ppm, color = area)) +
+ggplot(ena_esa, aes(x = dist_freeway_km, y = pb_ppm, color = area)) +
   geom_point(alpha = 0.5) +
   # Model without area: one line for all properties
   geom_abline(
-    intercept = betas_without,
-    slope = _____,
+    intercept = betas_without["(Intercept)"],
+    slope = betas_without["dist_freeway_km"],
     linewidth = 1
   ) +
   # Model with area: one line per area
   geom_abline(
-    aes(intercept = intercept, slope = slope, color = area),
+    aes(intercept = intercept,
+    slope = slope,
+    color = area),
     data = area_lines,
     linewidth = 1
   ) +
@@ -269,9 +276,13 @@ Answering this question requires an **interaction** between distance from Exide 
 Make a scatter plot of soil lead against distance from Exide, colored by area.
 
 ```{r}
+colnames(properties)
+```
+
+```{r}
 #| label: plot-exide
 
-ggplot(properties, aes(x = _____, y = _____, color = _____)) +
+ggplot(properties, aes(x = dist_exide_km, y = pb_ppm, color = area)) +
   geom_point(alpha = 0.5) +
   labs(
     x = "Distance from Exide (km)",
@@ -286,7 +297,7 @@ Now make a scatter plot of soil lead against home age. You don't need to color b
 #| label: plot-age
 #| warning: false
 
-ggplot(properties, aes(x = _____, y = _____)) +
+ggplot(properties, aes(x = home_age, y = pb_ppm)) +
   geom_point(alpha = 0.5) +
   labs(
     x = "Home age (years)",
@@ -325,8 +336,8 @@ Plug in the values of the dummy variables for each area, then collect the terms 
 | Area | Intercept | Slope with distance from Exide |
 |---|---|---|
 | ENA | $\beta_0$ | $\beta_1$ |
-| ESA | | |
-| SS | | |
+| ESA | $\beta_0$ + $\beta_2$ |$\beta_1$ + $\beta_5$
+| SS | $\beta_0$ + $\beta_3$| $\beta_1$ + $\beta_6$
 
 ### 2c. Fit the models
 
@@ -341,10 +352,10 @@ In an R formula, `a * b` is shorthand for `a + b + a:b`. The `:` term is the int
 ```{r}
 #| label: fit-exide-models
 
-additive_lm <- lm(pb_ppm ~ _____ + _____ + _____, data = properties)
+additive_lm <- lm(pb_ppm ~ dist_exide_km + home_age + area, data = properties)
 summary(additive_lm)
 
-exide_lm <- lm(pb_ppm ~ _____ * _____ + _____, data = properties)
+exide_lm <- lm(pb_ppm ~ dist_exide_km * area + home_age, data = properties)
 summary(exide_lm)
 ```
 
@@ -362,8 +373,8 @@ Use the table from 2b to calculate the slope of soil lead with distance from Exi
 betas <- coef(exide_lm)
 
 slope_ena <- betas["dist_exide_km"]
-slope_esa <- _____
-slope_ss <- _____
+slope_esa <- betas["dist_exide_km"]+ betas["dist_exide_km:areaESA"]
+slope_ss <- betas["dist_exide_km"] + betas["dist_exide_km:areaSS"]
 
 tibble(
   area = c("ENA", "ESA", "SS"),
@@ -419,11 +430,11 @@ In lab, you sketched a figure showing what the simulated data should look like b
 
 | Parameter | Meaning in this scenario | Sign (+ or -) | Your value |
 |---|---|---|---|
-| $\beta_0$ | Expected drip line soil lead at the facility (dist = 0) | | |
-| $\beta_1$ | | | |
-| $\beta_2$ | | | |
-| $\beta_3$ | | | |
-| $\sigma$ | | n/a | |
+| $\beta_0$ | Expected drip line soil lead at the facility (dist = 0) | + | 617 |
+| $\beta_1$ |Change in drip line soil lead per km away from Exide |  - | -35|
+| $\beta_2$ | Difference between yard intercept and drip line intercept | - | -100|
+| $\beta_3$ | Difference between yard distance slope and drip line slope| -  |-71 |
+| $\sigma$ | Random variation of model | n/a | 58|
 
 ::: {.callout-tip}
 
@@ -436,11 +447,11 @@ Here's a way to check your choices. The slope for drip line samples is $\beta_1$
 ```{r}
 #| label: sim-params
 
-beta_0 <- _____
-beta_1 <- _____
-beta_2 <- _____
-beta_3 <- _____
-sigma <- _____ 
+beta_0 <- 617
+beta_1 <- -35
+beta_2 <- -100
+beta_3 <- -71
+sigma <- 58 
 ```
 
 ### 3b. Simulate the predictors
@@ -451,9 +462,9 @@ Simulate `N = 200` soil cores. Distance from Exide should be continuous, so use 
 #| label: sim-predictors
 
 N <- 200
-dist_exide_km <- runif(N, min = _____, max = _____)
-location_code <- sample(c("DL", "YD"), size = N, replace = _____)
-yard <- ifelse(location_code == _____, 1, 0)
+dist_exide_km <- runif(N, min = 1, max = 3)
+location_code <- sample(c("DL", "YD"), size = N, replace = TRUE)
+yard <- ifelse(location_code == "YD", 1, 0)
 ```
 
 ### 3c. Simulate the response
@@ -466,11 +477,12 @@ The interaction term is just the product of the two predictors: `dist_exide_km *
 
 :::
 
+
 ```{r}
 #| label: sim-response
 
-pb_expected <- _____
-pb_ppm <- rnorm(n = _____, mean = _____, sd = _____)
+pb_expected <- beta_0 + beta_1 * dist_exide_km + beta_2 * yard + beta_3 * dist_exide_km * yard
+pb_ppm <- rnorm(n = N, mean = pb_expected, sd = sigma)
 
 simulated_cores <- tibble(
   dist_exide_km,
@@ -486,13 +498,13 @@ Fit an interactive model to your simulated data. Then compare the estimated coef
 ```{r}
 #| label: sim-fit
 
-sim_lm <- lm(_____ ~ _____ * _____, data = simulated_cores)
+sim_lm <- lm(pb_ppm ~ dist_exide_km * location_code, data = simulated_cores)
 summary(sim_lm)
 
 tibble(
   parameter = c("beta_0", "beta_1", "beta_2", "beta_3"),
   true = c(beta_0, beta_1, beta_2, beta_3),
-  estimated = coef(_____)
+  estimated = coef(sim_lm)
 )
 ```
 
@@ -516,15 +528,15 @@ model_lines <- tibble(
   location_code = c("DL", "YD", "DL", "YD"),
   intercept = c(
     beta_0,
-    _____,
+    beta_0 + beta_2,
     betas_hat[1],
-    _____
+    betas_hat[1] + betas_hat[3]
   ),
   slope = c(
     beta_1,
-    _____,
+    beta_1 + beta_3,
     betas_hat[2],
-    _____
+    betas_hat[2] + betas_hat[4]
   )
 )
 model_lines
@@ -541,11 +553,11 @@ Now make the figure. `geom_abline()` draws a line from an intercept and slope. M
 ```{r}
 #| label: sim-plot
 
-ggplot(simulated_cores, aes(x = _____, y = _____, color = _____)) +
+ggplot(simulated_cores, aes(x = dist_exide_km, y = pb_ppm, color = location_code)) +
   geom_point(alpha = 0.5) +
   geom_abline(
-    aes(intercept = intercept, slope = slope, color = _____, linetype = _____),
-    data = _____,
+    aes(intercept = intercept, slope = slope, color = location_code, linetype = source),
+    data = model_lines,
     linewidth = 1
   ) +
   scale_color_manual(values = c(DL = "cornflowerblue", YD = "firebrick")) +
