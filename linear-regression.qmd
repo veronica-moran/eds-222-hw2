@@ -135,6 +135,7 @@ Fit a simple linear regression with soil lead as the response and distance to fr
 ```{r}
 #| label: fit-freeway-lm
 
+# Soil lead in response to distance from freeway
 freeway_lm <- lm(pb_ppm~dist_freeway_km, data = ena_esa)
 summary(freeway_lm)
 ```
@@ -157,7 +158,7 @@ Now add `area` as a second predictor.
 
 ```{r}
 #| label: fit-freeway-area-lm
-
+# Soil lead in response to distance to freeway accounting for area
 freeway_area_lm <- lm(pb_ppm~dist_freeway_km + area, ena_esa)
 summary(freeway_area_lm)
 ```
@@ -181,13 +182,14 @@ Fill in the code below to create a table comparing the freeway distance slope fr
 ```{r}
 #| label: compare-slopes
 
+
 tibble(
   model = c("Without area", "With area"),
-  slope = c(
+  slope = c( # Coefficents for distance for each model
     coef(freeway_lm)["dist_freeway_km"],
     coef(freeway_area_lm)["dist_freeway_km"]
   ),
-  std_error = c(
+  std_error = c( # Standar error for distance for each model
     summary(freeway_lm)$coefficients["dist_freeway_km", "Std. Error"],
     summary(freeway_area_lm)$coefficients["dist_freeway_km", "Std. Error"]
   )
@@ -204,26 +206,24 @@ In `freeway_area_lm`, both areas share the same slope. Only the intercept differ
 
 :::
 
-
-```{r}
-betas_without <- coef(freeway_lm)
-betas_with <- coef(freeway_area_lm)
-```
 ```{r}
 #| label: plot-freeway-models
 
+# Saves coefficients in each model
 betas_without <- coef(freeway_lm)
 betas_with <- coef(freeway_area_lm)
+
 
 area_lines <- tibble(
   area = c("ENA", "ESA"),
   intercept = c(
-    betas_with["(Intercept)"],
-    betas_with["(Intercept)"] + betas_with["areaESA"]
+    betas_with["(Intercept)"], # ENA (reference) intercept, beta 0
+    betas_with["(Intercept)"] + betas_with["areaESA"] # ESA (dummy) intercept beta 0 + difference between ESA and ENA
   ),
   slope = betas_with["dist_freeway_km"]
 )
 
+# Plotting observed points with lm fitted lines
 ggplot(ena_esa, aes(x = dist_freeway_km, y = pb_ppm, color = area)) +
   geom_point(alpha = 0.5) +
   # Model without area: one line for all properties
@@ -282,6 +282,7 @@ colnames(properties)
 ```{r}
 #| label: plot-exide
 
+# Plotting istance from Exide and soil Pb raw data, colored by area
 ggplot(properties, aes(x = dist_exide_km, y = pb_ppm, color = area)) +
   geom_point(alpha = 0.5) +
   labs(
@@ -296,6 +297,8 @@ Now make a scatter plot of soil lead against home age. You don't need to color b
 ```{r}
 #| label: plot-age
 #| warning: false
+
+# Plotting home age and soil Pb raw data
 
 ggplot(properties, aes(x = home_age, y = pb_ppm)) +
   geom_point(alpha = 0.5) +
@@ -351,10 +354,11 @@ In an R formula, `a * b` is shorthand for `a + b + a:b`. The `:` term is the int
 
 ```{r}
 #| label: fit-exide-models
-
+# Additive model: soil Pb in response to distance to Exide, home age, and area
 additive_lm <- lm(pb_ppm ~ dist_exide_km + home_age + area, data = properties)
 summary(additive_lm)
 
+# Interactive model: soil Pb in response to distance from Exide and home age, with effect of distance differing by area
 exide_lm <- lm(pb_ppm ~ dist_exide_km * area + home_age, data = properties)
 summary(exide_lm)
 ```
@@ -370,10 +374,16 @@ Use the table from 2b to calculate the slope of soil lead with distance from Exi
 ```{r}
 #| label: area-slopes
 
+# coefficients of interactive model
 betas <- coef(exide_lm)
 
-slope_ena <- betas["dist_exide_km"]
+# ENA (reference) slope, change in soil Pb for each km farther from Exide
+slope_ena <- betas["dist_exide_km"] 
+
+# ESA slope - ENA slope plus difference between ESA distance slope and ENA distance slope
 slope_esa <- betas["dist_exide_km"]+ betas["dist_exide_km:areaESA"]
+
+# SS slope - ENA slope plus difference between SS distance slope and ENA distance slope
 slope_ss <- betas["dist_exide_km"] + betas["dist_exide_km:areaSS"]
 
 tibble(
@@ -447,11 +457,11 @@ Here's a way to check your choices. The slope for drip line samples is $\beta_1$
 ```{r}
 #| label: sim-params
 
-beta_0 <- 617
-beta_1 <- -35
-beta_2 <- -100
-beta_3 <- -71
-sigma <- 58 
+beta_0 <- 617 # Drip line intercept
+beta_1 <- -35 # Drip line distance slope
+beta_2 <- -100 # Difference between yard and drip line intercepts
+beta_3 <- -71 # Difference between yard and drip line distnance slopes
+sigma <- 58 # Standard deviation of residuals
 ```
 
 ### 3b. Simulate the predictors
@@ -461,9 +471,17 @@ Simulate `N = 200` soil cores. Distance from Exide should be continuous, so use 
 ```{r}
 #| label: sim-predictors
 
-N <- 200
+
+# Number of simulated samples
+N <- 200 
+
+# Generating random distance values between 1 and 3 km 
 dist_exide_km <- runif(N, min = 1, max = 3)
+
+# Randomly assigning "DL" or "YD" to each sample with replacement
 location_code <- sample(c("DL", "YD"), size = N, replace = TRUE)
+
+# Setting YD as the dummy variable (1); all other values (DL) are set to 0
 yard <- ifelse(location_code == "YD", 1, 0)
 ```
 
@@ -481,9 +499,13 @@ The interaction term is just the product of the two predictors: `dist_exide_km *
 ```{r}
 #| label: sim-response
 
+# Calculating expected soil PB values
 pb_expected <- beta_0 + beta_1 * dist_exide_km + beta_2 * yard + beta_3 * dist_exide_km * yard
+
+# Generating observed soil Pb values around the expected values with normally distributed residuals
 pb_ppm <- rnorm(n = N, mean = pb_expected, sd = sigma)
 
+# Combining simulated predictors and response into a tibble
 simulated_cores <- tibble(
   dist_exide_km,
   location_code,
@@ -498,9 +520,11 @@ Fit an interactive model to your simulated data. Then compare the estimated coef
 ```{r}
 #| label: sim-fit
 
+# Interactive linear model: soil PB in response to distance from Exide, effect of distance varies by location
 sim_lm <- lm(pb_ppm ~ dist_exide_km * location_code, data = simulated_cores)
 summary(sim_lm)
 
+# Comparing true parameter values in simulation with estimated coefficients
 tibble(
   parameter = c("beta_0", "beta_1", "beta_2", "beta_3"),
   true = c(beta_0, beta_1, beta_2, beta_3),
@@ -521,22 +545,24 @@ First, build a data frame with the intercept and slope of each line. There are f
 ```{r}
 #| label: sim-lines
 
+# Storing estimated coefficients from model
 betas_hat <- coef(sim_lm)
 
+# Intercepts and slopes for the true and estimated DL and YD lines
 model_lines <- tibble(
   source = c("True", "True", "Estimated", "Estimated"),
   location_code = c("DL", "YD", "DL", "YD"),
   intercept = c(
-    beta_0,
-    beta_0 + beta_2,
-    betas_hat[1],
-    betas_hat[1] + betas_hat[3]
+    beta_0, # True DL intercept
+    beta_0 + beta_2, # True YD intercept: DL intercept + difference between yard and DL intercept
+    betas_hat[1], # Estimated DL intercept
+    betas_hat[1] + betas_hat[3] # Estimated YD intercept: DL intercept + difference between yard and DL intercept
   ),
   slope = c(
-    beta_1,
-    beta_1 + beta_3,
-    betas_hat[2],
-    betas_hat[2] + betas_hat[4]
+    beta_1, # True DL slope
+    beta_1 + beta_3, # True YD slope: DL slope + difference between yard and DL slope
+    betas_hat[2], # Estimated DL slope
+    betas_hat[2] + betas_hat[4] # Estimated YD slope: DL slope + difference between yard and DL slope
   )
 )
 model_lines
@@ -553,9 +579,10 @@ Now make the figure. `geom_abline()` draws a line from an intercept and slope. M
 ```{r}
 #| label: sim-plot
 
+# Creating plot of simulated observations with true and estimated model lines
 ggplot(simulated_cores, aes(x = dist_exide_km, y = pb_ppm, color = location_code)) +
   geom_point(alpha = 0.5) +
-  geom_abline(
+  geom_abline( # Adding true and estimated DL and YD lines using intercepts and slopes from model_lines
     aes(intercept = intercept, slope = slope, color = location_code, linetype = source),
     data = model_lines,
     linewidth = 1
