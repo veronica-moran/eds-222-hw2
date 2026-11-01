@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Veronica Moran">
+
+<title>EDS 222 HW2</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="linear-regression_files/libs/clipboard/clipboard.min.js"></script>
+<script src="linear-regression_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="linear-regression_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="linear-regression_files/libs/quarto-html/popper.min.js"></script>
+<script src="linear-regression_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="linear-regression_files/libs/quarto-html/anchor.min.js"></script>
+<link href="linear-regression_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="linear-regression_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="linear-regression_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="linear-regression_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="linear-regression_files/libs/bootstrap/bootstrap-c6fd27c82b7ce9e4c11ffe0d86d7cd62.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">EDS 222 HW2</h1>
+<p class="subtitle lead">Linear regression</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Veronica Moran </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geosphere)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="prepare-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-the-data">0. Prepare the data</h2>
+<p>Problems 1 and 2 use the Exide soil core data and property covariates found in <code>/courses/EDS222/data</code>. The code below is provided for you. Read through it and make sure you understand what each step does, then run it.</p>
+<p>It creates a data frame called <code>properties</code> with <strong>one row per property</strong> and the following columns:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>property_id</code></td>
+<td>Unique property identifier</td>
+</tr>
+<tr class="even">
+<td><code>area</code></td>
+<td>Sampling area (<code>"ENA"</code>, <code>"ESA"</code>, or <code>"SS"</code>), taken from the first characters of <code>property_id</code></td>
+</tr>
+<tr class="odd">
+<td><code>pb_ppm</code></td>
+<td>Average soil lead concentration across all the property’s soil cores (ppm)</td>
+</tr>
+<tr class="even">
+<td><code>dist_exide_km</code></td>
+<td>Distance from the former Exide facility (km)</td>
+</tr>
+<tr class="odd">
+<td><code>year_built</code></td>
+<td>Year the home was built</td>
+</tr>
+<tr class="even">
+<td><code>home_age</code></td>
+<td>Age of the home in 2026 (years)</td>
+</tr>
+<tr class="odd">
+<td><code>dist_to_freeway_m</code></td>
+<td>Distance to the nearest freeway (m)</td>
+</tr>
+<tr class="even">
+<td><code>dist_freeway_km</code></td>
+<td>Distance to the nearest freeway (km)</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="st">"/courses/EDS222/data"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Approximate location of the former Exide facility (2700 S Indiana St, Vernon)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>exide_lon <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">118.1923</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>exide_lat <span class="ot">&lt;-</span> <span class="fl">34.0058</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load soil cores, drop extreme outliers, and calculate distance to Exide.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># distGeo() returns meters, so divide by 1000 to get km.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>soil_cores <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"exide-soil-cores.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pb_ppm <span class="sc">&lt;=</span> <span class="fl">5e3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">area =</span> <span class="fu">str_remove</span>(<span class="fu">str_sub</span>(property_id, <span class="dv">1</span>, <span class="dv">3</span>), <span class="st">"-"</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># distGeo() calculates the distance between geospatial points</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">dist_exide_km =</span> <span class="fu">distGeo</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">cbind</span>(longitude, latitude),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(exide_lon, exide_lat)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>property_covariates <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"exide-property-covariates.csv"</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Average the soil cores within each property, then join the covariates</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>properties <span class="ot">&lt;-</span> soil_cores <span class="sc">|&gt;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(property_id, area) <span class="sc">|&gt;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">pb_ppm =</span> <span class="fu">mean</span>(pb_ppm),</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">dist_exide_km =</span> <span class="fu">mean</span>(dist_exide_km),</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(property_covariates, <span class="at">by =</span> <span class="st">"property_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">home_age =</span> <span class="dv">2026</span> <span class="sc">-</span> year_built,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">dist_freeway_km =</span> dist_to_freeway_m <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Check: you should have 324 properties (79 ENA, 51 ESA, 194 SS)</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(properties, area)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  area      n
+  &lt;chr&gt; &lt;int&gt;
+1 ENA      79
+2 ESA      51
+3 SS      194</code></pre>
+</div>
+</div>
+</section>
+<section id="simpsons-paradox" class="level2">
+<h2 class="anchored" data-anchor-id="simpsons-paradox">1. Simpson’s paradox</h2>
+<section id="scenario" class="level3">
+<h3 class="anchored" data-anchor-id="scenario">Scenario</h3>
+<p>For decades, cars burned leaded gasoline, and lead from tailpipe exhaust settled into nearby soil. A resident asks:</p>
+<blockquote class="blockquote">
+<p>Is soil lead higher at properties closer to a freeway?</p>
+</blockquote>
+<p>You will investigate this question using properties in the <strong>ENA</strong> and <strong>ESA</strong> sampling areas only. As you’ll see, the answer depends on whether you account for sampling area. This is an example of <strong>Simpson’s paradox</strong>: a relationship between two variables that changes direction (or disappears) when a third variable is taken into account.</p>
+</section>
+<section id="a.-subset-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="a.-subset-the-data">1a. Subset the data</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(properties<span class="sc">$</span>area)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ENA" "ESA" "SS" </code></pre>
+</div>
+</div>
+<p>Create a data frame called <code>ena_esa</code> containing only the properties in the ENA and ESA areas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ena_esa <span class="ot">&lt;-</span> properties <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(area <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ENA"</span>, <span class="st">"ESA"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="b.-visualize-the-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="b.-visualize-the-raw-data">1b. Visualize the raw data</h3>
+<p>Make a scatter plot of soil lead and the distance to the nearest freeway. Color the points by which area they’re in.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(ena_esa)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "property_id"       "area"              "pb_ppm"           
+[4] "dist_exide_km"     "year_built"        "dist_to_freeway_m"
+[7] "home_age"          "dist_freeway_km"  </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ena_esa, <span class="fu">aes</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> dist_freeway_km,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> pb_ppm,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> area)) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Distance to Freeway (km)"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Soil Lead Concentration (ppm)"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Area"</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/plot-freeway-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Describe the pattern in your figure. How does distance to freeway differ between the two areas? How does soil lead differ between the two areas?</p>
+<p>ENA properties are closer to the freeway, all samples for these sites are within 1 km of the freeway. ESA properties are farther from the freeway, most of these sample sites are more than 1 km from the freeway.</p>
+<p>A large proportion of ENA samples have soil lead concentrations between 100 to 500 ppm, with many samples having higher lead concentrations than the ESA samples. ESA soil lead concentrations are generally lower than ENA samples and are within 100 to 300 ppm.</p>
+</section>
+<section id="c.-fit-a-model-without-the-categorical-predictor" class="level3">
+<h3 class="anchored" data-anchor-id="c.-fit-a-model-without-the-categorical-predictor">1c. Fit a model <em>without</em> the categorical predictor</h3>
+<p>Fit a simple linear regression with soil lead as the response and distance to freeway as the only predictor.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Soil lead in response to distance from freeway</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>freeway_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(pb_ppm<span class="sc">~</span>dist_freeway_km, <span class="at">data =</span> ena_esa)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(freeway_lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pb_ppm ~ dist_freeway_km, data = ena_esa)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-237.20  -95.50  -31.66   78.84  504.24 
+
+Coefficients:
+                Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       284.63      17.61  16.167   &lt;2e-16 ***
+dist_freeway_km   -36.87      15.58  -2.366   0.0195 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 137.8 on 128 degrees of freedom
+Multiple R-squared:  0.04191,   Adjusted R-squared:  0.03442 
+F-statistic: 5.599 on 1 and 128 DF,  p-value: 0.01947</code></pre>
+</div>
+</div>
+<p>Fill in the blanks to interpret the slope in a complete sentence, including units.</p>
+<blockquote class="blockquote">
+<p>For every additional kilometer from a freeway, average soil lead is expected to <em>decrease</em> by 36.87 ppm.</p>
+</blockquote>
+<p>Fill in the blanks below to interpret the slope’s p-value.</p>
+<p><span class="math inline">\(H_0\)</span>: the slope is 0, there is no linear relationship between soil lead concentration and distance to freeway.</p>
+<p><span class="math inline">\(H_A\)</span>: the slope not equal to 0, there is a linear relationship between soil lead concentration and distance to freeway.</p>
+<p>With a p-value of 0.0195, we reject the null hypothesis and conclude there is evidence for the alternative hypothesis there is a linear relationship between soil lead concentration and distance to freeway.</p>
+</section>
+<section id="d.-fit-a-model-with-the-categorical-predictor" class="level3">
+<h3 class="anchored" data-anchor-id="d.-fit-a-model-with-the-categorical-predictor">1d. Fit a model <em>with</em> the categorical predictor</h3>
+<p>Now add <code>area</code> as a second predictor.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Soil lead in response to distance to freeway accounting for area</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>freeway_area_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(pb_ppm<span class="sc">~</span>dist_freeway_km <span class="sc">+</span> area, ena_esa)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(freeway_area_lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pb_ppm ~ dist_freeway_km + area, data = ena_esa)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-234.44  -93.44  -18.35   62.55  507.58 
+
+Coefficients:
+                Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       278.88      17.82  15.654   &lt;2e-16 ***
+dist_freeway_km    12.22      33.13   0.369   0.7127    
+areaESA           -88.18      52.61  -1.676   0.0962 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 136.8 on 127 degrees of freedom
+Multiple R-squared:  0.06264,   Adjusted R-squared:  0.04788 
+F-statistic: 4.243 on 2 and 127 DF,  p-value: 0.01645</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R converts <code>area</code> into a dummy variable automatically. The reference level is the one that comes first alphabetically (“ENA”), so the coefficient <code>areaESA</code> is the difference between ESA and ENA.</p>
+</div>
+</div>
+<p>Interpret the slope for <code>dist_freeway_km</code> <em>and</em> the coefficient for <code>areaESA</code> in complete sentences. Remember that in a multiple regression, each coefficient describes the effect of that predictor <em>holding the other predictors constant</em>. In your interpretation, use the p-values to determine if the estimates are significantly different than 0.</p>
+<p>After accounting for area, for every additional kilometer from the freeway, average soil lead concentration is expected to increase by 12.22 ppm. With a p-value of 0.7127, we determine that this estimate is not statistically significant.</p>
+<p>After accounting for distance to freeway, average soil lead concentrations at ESA properties are expected to be 88.18 ppm lower than ENA properties. With a p-value of 0.0962, we determine that this estimate is not statistically significant.</p>
+</section>
+<section id="e.-compare-the-coefficient-estimates" class="level3">
+<h3 class="anchored" data-anchor-id="e.-compare-the-coefficient-estimates">1e. Compare the coefficient estimates</h3>
+<p>Fill in the code below to create a table comparing the freeway distance slope from the two models.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="fu">c</span>(<span class="st">"Without area"</span>, <span class="st">"With area"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope =</span> <span class="fu">c</span>( <span class="co"># Coefficients for distance for each model</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(freeway_lm)[<span class="st">"dist_freeway_km"</span>],</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(freeway_area_lm)[<span class="st">"dist_freeway_km"</span>]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">std_error =</span> <span class="fu">c</span>( <span class="co"># Standard error for distance for each model</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(freeway_lm)<span class="sc">$</span>coefficients[<span class="st">"dist_freeway_km"</span>, <span class="st">"Std. Error"</span>],</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(freeway_area_lm)<span class="sc">$</span>coefficients[<span class="st">"dist_freeway_km"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  model        slope std_error
+  &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+1 Without area -36.9      15.6
+2 With area     12.2      33.1</code></pre>
+</div>
+</div>
+</section>
+<section id="f.-visualize-both-models" class="level3">
+<h3 class="anchored" data-anchor-id="f.-visualize-both-models">1f. Visualize both models</h3>
+<p>The code below adds the fitted lines from both models to your scatter plot. The single black line comes from <code>freeway_lm</code>. The two colored lines come from <code>freeway_area_lm</code>. Fill in the blanks to calculate the intercepts for each area.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In <code>freeway_area_lm</code>, both areas share the same slope. Only the intercept differs. The intercept for ENA is <span class="math inline">\(\beta_0\)</span>. The intercept for ESA is <span class="math inline">\(\beta_0 + \beta_2\)</span>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Saves coefficients in each model</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>betas_without <span class="ot">&lt;-</span> <span class="fu">coef</span>(freeway_lm)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>betas_with <span class="ot">&lt;-</span> <span class="fu">coef</span>(freeway_area_lm)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>area_lines <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">c</span>(<span class="st">"ENA"</span>, <span class="st">"ESA"</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">intercept =</span> <span class="fu">c</span>(</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    betas_with[<span class="st">"(Intercept)"</span>], <span class="co"># ENA (reference) intercept, beta 0</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ESA (dummy) intercept beta 0 + difference between ESA and ENA</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    betas_with[<span class="st">"(Intercept)"</span>] <span class="sc">+</span> betas_with[<span class="st">"areaESA"</span>] </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope =</span> betas_with[<span class="st">"dist_freeway_km"</span>]</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting observed points with lm fitted lines</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ena_esa, <span class="fu">aes</span>(<span class="at">x =</span> dist_freeway_km, <span class="at">y =</span> pb_ppm, <span class="at">color =</span> area)) <span class="sc">+</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Model without area: one line for all properties</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept =</span> betas_without[<span class="st">"(Intercept)"</span>],</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope =</span> betas_without[<span class="st">"dist_freeway_km"</span>],</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Model with area: one line per area</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">intercept =</span> intercept,</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope =</span> slope,</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> area),</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> area_lines,</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Distance to freeway (km)"</span>,</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average soil Pb (ppm)"</span>,</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Sampling area"</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/plot-freeway-models-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="g.-interpret" class="level3">
+<h3 class="anchored" data-anchor-id="g.-interpret">1g. Interpret</h3>
+<p>Answer the following questions in 2-3 sentences each.</p>
+<ol type="1">
+<li>How did the estimated effect of freeway distance change when you added <code>area</code> to the model? Consider the sign, the magnitude, <em>and</em> the standard error.</li>
+</ol>
+<p>When area was added, the estimated effect of freeway distance on soil lead concentration changed from a negative relationship to a positive relationship. The magnitude decreased, with the slope changing from -36.87 ppm/km without area to 12.22 ppm/km with area. The standard error increased, from 15.6 to 33.1, indicating greater uncertainty in the estimate.</p>
+<ol start="2" type="1">
+<li>Using your figure from 1b, explain <em>why</em> the estimate changed. What is the relationship between <code>area</code> and <code>dist_freeway_km</code>?</li>
+</ol>
+<p>ENA properties generally have higher soil lead concentrations and are closer to the freeway compared to ESA properties. In the model without area included as a categorical predictor, differences between the areas are attributed to distance to freeway, which makes it appear as if there is a strong negative relationship between distance to freeway and soil lead concentration. Once the model includes area as the categorical predictor, properties within each area are compared, and there is little change in soil lead concentration as distance to freeway increases. The slope magnitude decreases and goes from negative to positive, and the p-value changes from 0.02 to 0.7, which indicates that the estimate is not statistically significant.</p>
+<ol start="3" type="1">
+<li>Based on these data, what would you tell the resident who asked whether soil lead is higher near freeways? What other variables might differ between ENA and ESA that could explain the difference in soil lead?</li>
+</ol>
+<p>Properties in the ENA area are closer to the freeway and do have higher lead concentrations compared to properties in the ESA area, which are farther from the freeway. But after accounting for area, our data does not have strong evidence that distance to the freeway has an effect on soil lead concentration. Other variables that could explain these differences include home age, wind direction, and distance to Exide. Older homes may have lead-based paint, wind direction can carry Exide emissions toward certain areas, and proximity to the Exide facility may lead to higher soil lead concentration.</p>
+</section>
+</section>
+<section id="fit-and-interpret-an-interactive-model" class="level2">
+<h2 class="anchored" data-anchor-id="fit-and-interpret-an-interactive-model">2. Fit and interpret an interactive model</h2>
+<section id="scenario-1" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-1">Scenario</h3>
+<p>Exide emitted lead into the air for decades, and that lead settled into the soil of surrounding neighborhoods. You might expect soil lead to decline with distance from the facility. However, the three sampling areas lie in different directions from the facility and have different street layouts and land uses. Airborne emissions are carried by prevailing winds, so the <em>rate</em> at which soil lead declines with distance may not be the same in every area.</p>
+<p>Older homes are also more likely to have been painted with lead-based paint, which is an important source of soil lead independent of Exide. To isolate the effect of distance from Exide, you’ll need to account for home age.</p>
+<p>Your question is:</p>
+<blockquote class="blockquote">
+<p>Does the relationship between soil lead and distance from Exide differ among sampling areas, after accounting for home age?</p>
+</blockquote>
+<p>Answering this question requires an <strong>interaction</strong> between distance from Exide and sampling area. An additive model (no interaction) forces every area to have the same slope, so it <em>can’t</em> tell you whether the slopes differ.</p>
+</section>
+<section id="a.-visualize-the-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="a.-visualize-the-raw-data">2a. Visualize the raw data</h3>
+<p>Make a scatter plot of soil lead against distance from Exide, colored by area.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(properties)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "property_id"       "area"              "pb_ppm"           
+[4] "dist_exide_km"     "year_built"        "dist_to_freeway_m"
+[7] "home_age"          "dist_freeway_km"  </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting distance from Exide and soil Pb raw data, colored by area</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(properties, <span class="fu">aes</span>(<span class="at">x =</span> dist_exide_km, <span class="at">y =</span> pb_ppm, <span class="at">color =</span> area)) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Distance from Exide (km)"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average soil Pb (ppm)"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Sampling area"</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/plot-exide-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now make a scatter plot of soil lead against home age. You don’t need to color by area.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting home age and soil Pb raw data</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(properties, <span class="fu">aes</span>(<span class="at">x =</span> home_age, <span class="at">y =</span> pb_ppm)) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Home age (years)"</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average soil Pb (ppm)"</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/plot-age-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Describe what you see in both figures. What’s the relationship between soil lead and distance from Exide, and does it vary by area? Does soil lead appear to be related to home age?</p>
+<p><em>Without accounting for area, soil lead concentration seems to decrease as distance from Exide increases. Properties in the SS sampling area are concentrated closer to Exide, within 1.75 km. Properties in the ENA and ESA areas have more variability in distance to Exide and soil lead concentration. SS and ENA sampling areas include more of the higher soil lead concentrations compared to ESA. For properties in the SS area, as distance to exide increases there is a decline in average soil lead concentration. For the ENA and ESA area there is no clear relationship between distance to Exide and soil lead concentration. For home age, the plot shows a positive relationship between home age and average soil lead concentration. Most homes that are less than 75 years old have soil lead concentrations below 250 ppm. Properties that are older than 75 years have greater variability in soil lead concentration, including many values between 250 ppm and 500 ppm.</em></p>
+</section>
+<section id="b.-write-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="b.-write-the-model">2b. Write the model</h3>
+<p>The model you’ll fit has two continuous predictors (<code>dist_exide_km</code> and <code>home_age</code>), one categorical predictor with three levels (<code>area</code>), and an interaction between <code>dist_exide_km</code> and <code>area</code>. Because <code>area</code> has three levels, it needs <strong>two</strong> dummy variables. ENA is the reference level.</p>
+<ul>
+<li><span class="math inline">\(\text{ESA} = 1\)</span> if the property is in ESA, 0 otherwise</li>
+<li><span class="math inline">\(\text{SS} = 1\)</span> if the property is in SS, 0 otherwise</li>
+</ul>
+<p>Here’s the model equation.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Pb} = \beta_0 &amp;+ \beta_1 \text{dist} + \beta_2 \text{ESA} + \beta_3 \text{SS} + \beta_4 \text{age} \\
+&amp;+ \beta_5 \text{dist} \times \text{ESA} + \beta_6 \text{dist} \times \text{SS} + \varepsilon
+\end{aligned}
+\]</span></p>
+<p>Now use your equation to fill in the table. Each cell should be written in terms of <span class="math inline">\(\beta\)</span>s. The first row is done for you.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Plug in the values of the dummy variables for each area, then collect the terms that are multiplied by <span class="math inline">\(\text{dist}\)</span> (those make up the slope) and the terms that aren’t (those make up the intercept). Hold age at zero for the intercept.</p>
+</div>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>Intercept</th>
+<th>Slope with distance from Exide</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ENA</td>
+<td><span class="math inline">\(\beta_0\)</span></td>
+<td><span class="math inline">\(\beta_1\)</span></td>
+</tr>
+<tr class="even">
+<td>ESA</td>
+<td><span class="math inline">\(\beta_0\)</span> + <span class="math inline">\(\beta_2\)</span></td>
+<td><span class="math inline">\(\beta_1\)</span> + <span class="math inline">\(\beta_5\)</span></td>
+</tr>
+<tr class="odd">
+<td>SS</td>
+<td><span class="math inline">\(\beta_0\)</span> + <span class="math inline">\(\beta_3\)</span></td>
+<td><span class="math inline">\(\beta_1\)</span> + <span class="math inline">\(\beta_6\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="c.-fit-the-models" class="level3">
+<h3 class="anchored" data-anchor-id="c.-fit-the-models">2c. Fit the models</h3>
+<p>Fit two models. First, an <em>additive</em> model without an interaction. Second, the <em>interactive</em> model you wrote in 2b.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In an R formula, <code>a * b</code> is shorthand for <code>a + b + a:b</code>. The <code>:</code> term is the interaction.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Additive model: soil Pb in response to distance to Exide, home age, and area</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>additive_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(pb_ppm <span class="sc">~</span> dist_exide_km <span class="sc">+</span> home_age <span class="sc">+</span> area, <span class="at">data =</span> properties)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(additive_lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pb_ppm ~ dist_exide_km + home_age + area, data = properties)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-228.10  -74.51  -20.15   48.25  495.81 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   105.6784    63.0835   1.675   0.0949 .  
+dist_exide_km -19.4462    22.8653  -0.850   0.3957    
+home_age        2.1434     0.3956   5.418 1.21e-07 ***
+areaESA       -47.6947    20.8989  -2.282   0.0232 *  
+areaSS        -45.1491    19.8105  -2.279   0.0233 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 114 on 309 degrees of freedom
+  (10 observations deleted due to missingness)
+Multiple R-squared:  0.1314,    Adjusted R-squared:  0.1202 
+F-statistic: 11.69 on 4 and 309 DF,  p-value: 7.52e-09</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive model: soil Pb in response to distance from Exide and home age,</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># effect of distance differing by area</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>exide_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(pb_ppm <span class="sc">~</span> dist_exide_km <span class="sc">*</span> area <span class="sc">+</span> home_age, <span class="at">data =</span> properties)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(exide_lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pb_ppm ~ dist_exide_km * area + home_age, data = properties)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-244.68  -74.82  -17.76   48.85  494.53 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)            101.7239    74.2762   1.370  0.17183    
+dist_exide_km           -5.4869    33.1057  -0.166  0.86847    
+areaESA                -91.3760    96.9073  -0.943  0.34646    
+areaSS                 263.4618   119.6127   2.203  0.02836 *  
+home_age                 1.9109     0.4027   4.745  3.2e-06 ***
+dist_exide_km:areaESA   20.3306    48.2140   0.422  0.67356    
+dist_exide_km:areaSS  -211.9339    77.3931  -2.738  0.00653 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 112.6 on 307 degrees of freedom
+  (10 observations deleted due to missingness)
+Multiple R-squared:  0.1571,    Adjusted R-squared:  0.1407 
+F-statistic: 9.539 on 6 and 307 DF,  p-value: 1.276e-09</code></pre>
+</div>
+</div>
+<p>Match each coefficient in the <code>exide_lm</code> summary to a <span class="math inline">\(\beta\)</span> in your equation from 2b. For example, <code>(Intercept)</code> is <span class="math inline">\(\beta_0\)</span>.</p>
+<p><em><code>(Intercept)</code> is <span class="math inline">\(\beta_0\)</span> <code>dist_exide_km</code> is <span class="math inline">\(\beta_1\)</span> <code>areaESA</code> is <span class="math inline">\(\beta_2\)</span> <code>areaSS</code> is <span class="math inline">\(\beta_3\)</span> <code>home_age</code> is <span class="math inline">\(\beta_4\)</span> <code>dist_exide_km:areaESA</code> is <span class="math inline">\(\beta_5\)</span> <code>dist_exide_km:areaSS</code> is <span class="math inline">\(\beta_6\)</span></em></p>
+</section>
+<section id="d.-calculate-the-slopes-for-each-area" class="level3">
+<h3 class="anchored" data-anchor-id="d.-calculate-the-slopes-for-each-area">2d. Calculate the slopes for each area</h3>
+<p>Use the table from 2b to calculate the slope of soil lead with distance from Exide in each area.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coefficients of interactive model</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">coef</span>(exide_lm)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ENA (reference) slope, change in soil Pb for each km farther from Exide</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>slope_ena <span class="ot">&lt;-</span> betas[<span class="st">"dist_exide_km"</span>] </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ESA slope</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ENA slope plus difference between ESA distance slope and ENA distance slope</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>slope_esa <span class="ot">&lt;-</span> betas[<span class="st">"dist_exide_km"</span>]<span class="sc">+</span> betas[<span class="st">"dist_exide_km:areaESA"</span>]</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="co"># SS slope</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ENA slope plus difference between SS distance slope and ENA distance slope</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>slope_ss <span class="ot">&lt;-</span> betas[<span class="st">"dist_exide_km"</span>] <span class="sc">+</span> betas[<span class="st">"dist_exide_km:areaSS"</span>]</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">c</span>(<span class="st">"ENA"</span>, <span class="st">"ESA"</span>, <span class="st">"SS"</span>),</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope =</span> <span class="fu">c</span>(slope_ena, slope_esa, slope_ss)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  area    slope
+  &lt;chr&gt;   &lt;dbl&gt;
+1 ENA     -5.49
+2 ESA     14.8 
+3 SS    -217.  </code></pre>
+</div>
+</div>
+</section>
+<section id="e.-interpret" class="level3">
+<h3 class="anchored" data-anchor-id="e.-interpret">2e. Interpret</h3>
+<p>Answer the following questions in 2-3 sentences each.</p>
+<ol type="1">
+<li>Interpret the slope of soil lead with distance from Exide in each area (from 2d), including units.</li>
+</ol>
+<p>For the ENA area, after accounting for home age, there is a slight negative linear relationship between distance from Exide and soil lead concentration. As distance from Exide increases by 1 km, average soil lead concentration is expected to decrease by 5.49 ppm.</p>
+<p>For the ESA area, after accounting for home age, there is a slight positive linear relationship between distance from Exide and soil lead concentration. As distance from Exide increases by 1 km, average soil lead concentration is expected to increase by 14.8 ppm.</p>
+<p>For the SS area, after accounting for home age, there is a strong negative linear relationship between distance from Exide and soil lead concentration. As distance from Exide increases by 1 km, average soil lead concentration is expected to decrease by 217 ppm.</p>
+<ol start="2" type="1">
+<li>Interpret the coefficient for <code>home_age</code>, including units.</li>
+</ol>
+<p>When distance from Exide and sampling area are held constant, average soil lead concentration is expected to increase by 1.91 ppm for each additional year of home age. This indicates a positive linear relationship between home age and average soil lead concentration.</p>
+<ol start="3" type="1">
+<li>Look at the <code>dist_exide_km</code> coefficient in <code>additive_lm</code>. What would you have concluded about the effect of distance from Exide if you had only fit the additive model? Why was the interaction necessary to answer the question?</li>
+</ol>
+<p>Interpreting the additive linear model which holds area constant when estimating the effect of distance, I would conclude that average soil lead concentration decreases by 19.45 ppm for each additional kilometer from Exide. With a p-value of 0.40, this estimate is not statistically significant. The interaction was necessary because the relationship between the distance from Exide and average soil lead concentration differs by area, a single slope would not accurately describe the relationship in each area.</p>
+<ol start="4" type="1">
+<li>Which interaction coefficient(s) are statistically significant at the 0.05 level? What does that mean in the context of the scenario?</li>
+</ol>
+<p>The interaction coefficient for distance from Exide and area SS is statistically significant. With a p-value of 0.007, there is evidence that the relationship between distance from Exide and soil lead concentration in the SS area is different from the relationship of the reference area, ENA. The slope of the SS area is 211.93 ppm/km lower than the slope of the ENA area.</p>
+</section>
+</section>
+<section id="simulate-data-for-an-interactive-model" class="level2">
+<h2 class="anchored" data-anchor-id="simulate-data-for-an-interactive-model">3. Simulate data for an interactive model</h2>
+<section id="scenario-2" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-2">Scenario</h3>
+<p>Each property in the Exide data has soil cores collected from two locations: the <strong>drip line</strong> (<code>DL</code>, the soil directly under the roof edge) and the <strong>yard</strong> (<code>YD</code>). These locations get lead from different sources.</p>
+<ul>
+<li>Yard soil receives lead mostly from <strong>airborne deposition</strong>, so you’d expect yard soil lead to decline steeply with distance from Exide.</li>
+<li>Drip line soil also receives lead from <strong>paint</strong> that flakes off the house and washes off the roof. Paint lead doesn’t depend on distance from Exide, so you’d expect drip line soil to have higher lead overall and to decline <em>less</em> steeply with distance.</li>
+</ul>
+<p>In this problem, you’ll simulate data that matches this scenario, fit an interactive model to it, and check how well the model recovers the parameters you used.</p>
+<p>The model is:</p>
+<p><span class="math display">\[
+\text{Pb} = \beta_0 + \beta_1 \times \text{dist} + \beta_2 \times \text{YD} + \beta_3 \times \text{dist} \times \text{YD} + \varepsilon
+\]</span></p>
+<p><span class="math display">\[
+\varepsilon \sim N(0, \sigma)
+\]</span></p>
+<p>where <span class="math inline">\(\text{YD} = 1\)</span> for yard samples and 0 for drip line samples. Drip line is the reference level, which matches how R will code it (“DL” comes before “YD” alphabetically).</p>
+</section>
+<section id="a.-choose-your-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="a.-choose-your-parameters">3a. Choose your parameters</h3>
+<p>Before you write code, decide what each parameter means in this scenario and what sign it should have. Fill in the table.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In lab, you sketched a figure showing what the simulated data should look like before picking your coefficients. Try doing the same here!</p>
+</div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Meaning in this scenario</th>
+<th>Sign (+ or -)</th>
+<th>Your value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\beta_0\)</span></td>
+<td>Expected drip line soil lead at the facility (dist = 0)</td>
+<td>+</td>
+<td>617</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\beta_1\)</span></td>
+<td>Change in drip line soil lead per km away from Exide</td>
+<td>-</td>
+<td>-35</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\beta_2\)</span></td>
+<td>Difference between yard intercept and drip line intercept</td>
+<td>-</td>
+<td>-100</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\beta_3\)</span></td>
+<td>Difference between yard distance slope and drip line slope</td>
+<td>-</td>
+<td>-71</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\sigma\)</span></td>
+<td>Random variation of model</td>
+<td>n/a</td>
+<td>58</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Keep your values realistic. In the real data, distances from Exide range from about 1 to 3 km and average soil lead ranges from about 50 to 1,000 ppm. Make sure your expected soil lead stays positive across the range of distances you simulate.</p>
+<p>Here’s a way to check your choices. The slope for drip line samples is <span class="math inline">\(\beta_1\)</span>, and the slope for yard samples is <span class="math inline">\(\beta_1 + \beta_3\)</span>. If yard soil declines <em>more</em> steeply than drip line soil, what does that imply about the sign of <span class="math inline">\(\beta_3\)</span>?</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>beta_0 <span class="ot">&lt;-</span> <span class="dv">617</span> <span class="co"># Drip line intercept</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>beta_1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">35</span> <span class="co"># Drip line distance slope</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>beta_2 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="co"># Difference between yard and drip line intercepts</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>beta_3 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">71</span> <span class="co"># Difference between yard and drip line distance slopes</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">58</span> <span class="co"># Standard deviation of residuals</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="b.-simulate-the-predictors" class="level3">
+<h3 class="anchored" data-anchor-id="b.-simulate-the-predictors">3b. Simulate the predictors</h3>
+<p>Simulate <code>N = 200</code> soil cores. Distance from Exide should be continuous, so use <code>runif()</code>. Sample location is categorical, so use <code>sample()</code>. Then create the dummy variable for yard samples.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of simulated samples</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generating random distance values between 1 and 3 km </span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>dist_exide_km <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min =</span> <span class="dv">1</span>, <span class="at">max =</span> <span class="dv">3</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly assigning "DL" or "YD" to each sample with replacement</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>location_code <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">"DL"</span>, <span class="st">"YD"</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Setting YD as the dummy variable (1); all other values (DL) are set to 0</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>yard <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(location_code <span class="sc">==</span> <span class="st">"YD"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="c.-simulate-the-response" class="level3">
+<h3 class="anchored" data-anchor-id="c.-simulate-the-response">3c. Simulate the response</h3>
+<p>First, calculate the expected value of soil lead using your model equation. Then add normally-distributed residuals with <code>rnorm()</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The interaction term is just the product of the two predictors: <code>dist_exide_km * yard</code>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculating expected soil Pb values</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>pb_expected <span class="ot">&lt;-</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  beta_0 <span class="sc">+</span> beta_1 <span class="sc">*</span> dist_exide_km <span class="sc">+</span> beta_2 <span class="sc">*</span> yard <span class="sc">+</span> beta_3 <span class="sc">*</span> dist_exide_km <span class="sc">*</span> yard</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generating observed soil Pb values</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># around the expected values with normally distributed residuals</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>pb_ppm <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> N, <span class="at">mean =</span> pb_expected, <span class="at">sd =</span> sigma)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining simulated predictors and response into a tibble</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>simulated_cores <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  dist_exide_km,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  location_code,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  pb_ppm</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="d.-fit-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="d.-fit-the-model">3d. Fit the model</h3>
+<p>Fit an interactive model to your simulated data. Then compare the estimated coefficients to the parameters you chose.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive linear model: soil Pb in response to distance from Exide</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># effect of distance varies by location</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>sim_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(pb_ppm <span class="sc">~</span> dist_exide_km <span class="sc">*</span> location_code, <span class="at">data =</span> simulated_cores)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sim_lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pb_ppm ~ dist_exide_km * location_code, data = simulated_cores)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-144.756  -34.164   -0.801   36.331  181.679 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                     602.85      22.03  27.360  &lt; 2e-16 ***
+dist_exide_km                   -24.77      10.20  -2.430  0.01600 *  
+location_codeYD                 -99.02      29.77  -3.325  0.00105 ** 
+dist_exide_km:location_codeYD   -77.26      14.11  -5.475 1.33e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 57.93 on 196 degrees of freedom
+Multiple R-squared:  0.8403,    Adjusted R-squared:  0.8379 
+F-statistic: 343.9 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparing true parameter values in simulation with estimated coefficients</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="fu">c</span>(<span class="st">"beta_0"</span>, <span class="st">"beta_1"</span>, <span class="st">"beta_2"</span>, <span class="st">"beta_3"</span>),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">true =</span> <span class="fu">c</span>(beta_0, beta_1, beta_2, beta_3),</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimated =</span> <span class="fu">coef</span>(sim_lm)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  parameter  true estimated
+  &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 beta_0      617     603. 
+2 beta_1      -35     -24.8
+3 beta_2     -100     -99.0
+4 beta_3      -71     -77.3</code></pre>
+</div>
+</div>
+<p>The model estimates are within about one standard error of the true parameters, so the model recovered the parameters well. Small differences are expected because the sigma value, 58 ppm, simulates random noise.</p>
+</section>
+<section id="e.-visualize-the-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="e.-visualize-the-simulation">3e. Visualize the simulation</h3>
+<p>Make a figure with three layers:</p>
+<ol type="1">
+<li>The simulated data as points</li>
+<li><strong>Dashed</strong> lines for the <em>true</em> relationships (from the <span class="math inline">\(\beta\)</span>s you chose)</li>
+<li><strong>Solid</strong> lines for the <em>estimated</em> relationships (from <code>sim_lm</code>)</li>
+</ol>
+<p>First, build a data frame with the intercept and slope of each line. There are four lines: true and estimated, for drip line and yard. Use your table from 3a (and the tip there) to fill in the blanks.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Storing estimated coefficients from model</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>betas_hat <span class="ot">&lt;-</span> <span class="fu">coef</span>(sim_lm)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Intercepts and slopes for the true and estimated DL and YD lines</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>model_lines <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">source =</span> <span class="fu">c</span>(<span class="st">"True"</span>, <span class="st">"True"</span>, <span class="st">"Estimated"</span>, <span class="st">"Estimated"</span>),</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">location_code =</span> <span class="fu">c</span>(<span class="st">"DL"</span>, <span class="st">"YD"</span>, <span class="st">"DL"</span>, <span class="st">"YD"</span>),</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">intercept =</span> <span class="fu">c</span>(</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    beta_0, <span class="co"># True DL intercept</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># True YD intercept: DL intercept + difference between yard and DL intercept</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    beta_0 <span class="sc">+</span> beta_2, </span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    betas_hat[<span class="dv">1</span>], <span class="co"># Estimated DL intercept</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Estimated YD intercept: DL intercept + difference between yard and DL intercept</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    betas_hat[<span class="dv">1</span>] <span class="sc">+</span> betas_hat[<span class="dv">3</span>] </span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope =</span> <span class="fu">c</span>(</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    beta_1, <span class="co"># True DL slope</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    beta_1 <span class="sc">+</span> beta_3, <span class="co"># True YD slope: DL slope + difference between yard and DL slope</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    betas_hat[<span class="dv">2</span>], <span class="co"># Estimated DL slope</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Estimated YD slope: DL slope + difference between yard and DL slope</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>    betas_hat[<span class="dv">2</span>] <span class="sc">+</span> betas_hat[<span class="dv">4</span>] </span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>model_lines</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  source    location_code intercept  slope
+  &lt;chr&gt;     &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;
+1 True      DL                 617   -35  
+2 True      YD                 517  -106  
+3 Estimated DL                 603.  -24.8
+4 Estimated YD                 504. -102. </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>betas_hat</code> is a vector in the same order as the <code>sim_lm</code> summary: <code>betas_hat[1]</code> is the intercept, <code>betas_hat[2]</code> is the distance slope, <code>betas_hat[3]</code> is the yard intercept difference, and <code>betas_hat[4]</code> is the interaction.</p>
+</div>
+</div>
+<p>Now make the figure. <code>geom_abline()</code> draws a line from an intercept and slope. Map <code>color</code> to sample location and <code>linetype</code> to whether the line is true or estimated.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating plot of simulated observations with true and estimated model lines</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(simulated_cores, <span class="fu">aes</span>(<span class="at">x =</span> dist_exide_km, <span class="at">y =</span> pb_ppm, <span class="at">color =</span> location_code)) <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>( <span class="co"># Adding true and estimated DL and YD lines</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">intercept =</span> intercept, <span class="at">slope =</span> slope, <span class="at">color =</span> location_code, <span class="at">linetype =</span> source),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> model_lines,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">DL =</span> <span class="st">"cornflowerblue"</span>, <span class="at">YD =</span> <span class="st">"firebrick"</span>)) <span class="sc">+</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">True =</span> <span class="st">"dashed"</span>, <span class="at">Estimated =</span> <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Distance from Exide (km)"</span>,</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Soil Pb (ppm)"</span>,</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Sample location"</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"Line"</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/sim-plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
